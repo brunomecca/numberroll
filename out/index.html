@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head> </head>
+    <body>
+        <h1>TUTS TUTS!</h1>
+        <div id="future"></div>
+        <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+        <script src="/socket.io/socket.io.js"></script>
+
+        <script>
+            var socket = io.connect("http://localhost:3000");
+            socket.on("connect", function(data) {
+                socket.emit("join", "Hello World from client");
+            });
+            var playerId = 0;
+            socket.on("scene", function(data) {
+                $("#future").empty();
+                if (data[1]) playerId = data[1];
+                console.log(data);
+                for (let di of data[0]) {
+                    let string = "<div>";
+                    for (let diz of di) {
+                        string += diz + " ";
+                    }
+                    string += "</div>";
+                    $("#future").append(string);
+                }
+            });
+
+            $(document).keydown(function(e) {
+                if (
+                    e.keyCode == 68 ||
+                    e.keyCode == 65 ||
+                    e.keyCode == 87 ||
+                    e.keyCode == 83
+                ) {
+                    socket.emit("keydown", [e.keyCode, playerId]);
+                }
+            });
+        </script>
+    </body>
+</html>
